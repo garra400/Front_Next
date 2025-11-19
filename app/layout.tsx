@@ -1,8 +1,10 @@
 // Estrutura da aplicação (Afeta todas as páginas)
 
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,13 +32,22 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
 
-        <header className="bg-blue-700 text-white p-4 shadow">
-          <div className="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">App Aula TAC</h1>
-            <nav>
-              <a href="/user" className="mr-4 hover:underline">Lista</a>
-              <a href="/user/form" className="hover:underline">Cadastro</a>
+
+        <header className="w-full flex justify-between items-center p-6 border-b bg-white shadow-sm">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="text-2xl font-bold text-green-900">Silo Manager</Link>
+            <nav className="space-x-6">
+              <Link href="/silo" className="font-semibold text-gray-700 hover:text-green-900">Silos</Link>
+              <Link href="/sensor" className="font-semibold text-gray-700 hover:text-green-900">Sensores</Link>
+              <Link href="/device" className="font-semibold text-gray-700 hover:text-green-900">Dispositivos</Link>
+              <Link href="/property" className="font-semibold text-gray-700 hover:text-green-900">Propriedades</Link>
+              <Link href="/person" className="font-semibold text-gray-700 hover:text-green-900">Pessoas</Link>
+              <Link href="/user" className="font-semibold text-gray-700 hover:text-green-900">Usuários</Link>
             </nav>
+          </div>
+          <div className="flex gap-4">
+            <Link href="/login" className="bg-green-900 text-white px-4 py-2 rounded-full font-semibold hover:bg-green-800">Login</Link>
+            <Link href="/register" className="border border-green-900 text-green-900 px-4 py-2 rounded-full font-semibold hover:bg-green-50">Registro</Link>
           </div>
         </header>
 

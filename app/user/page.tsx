@@ -1,92 +1,79 @@
 'use client'
 
 import { useEffect, useState } from "react";
+import { authFetch } from "../service/user_service";
+import Link from "next/link";
+
+type User = {
+  id: number;
+  name: string;
+  email: string;
+};
 
 export default function UserList() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
 
-    // Estados
-    const [users, setUsers] = useState([]) // Estado inicial é uma lista vazia
-
-    const loadUsers = async() => {
-        // Se não tiver erro cai no then, caso contrário cai no catch
-        fetch('https://reqres.in/api/users', {    // cont rest = await fetch - await faz esperar a resposta
-            method: 'GET',  // Método da Requisição
-            headers: {      // O que vai ser enviado no header da requisição
-                'x-api-key': 'reqres-free-v1'
-            }
-        }) // Sem await, o fetch roda em paralelo
-        .then(async (response) => {
-            const res = await response.json(); // OBS: Lembrar de converter para JSON
-            setUsers(res.data); // Alterando o estado de usuários
-        }) 
-        .catch((err) => {
-            console.log(err)
-        });
+  const loadUsers = async () => {
+    setError("");
+    try {
+      const res = await authFetch("http://localhost:8080/api/users");
+      if (!res.ok) throw new Error("Erro ao carregar usuários");
+      const data = await res.json();
+      setUsers(data);
+    } catch {
+      setError("Erro ao carregar usuários");
     }
+  };
 
-    // Efeito colateral para observação de estados
-    // Nesse caso, não está observando um estado específico,
-    // mas dispara o efeito colateral ao carregar o componente
-    useEffect(() => {loadUsers()}, []) //( funcao, estado)
+  useEffect(() => { loadUsers(); }, []);
 
-    return(
+  return (
     <main>
-        <div className="max-w-4xl mx-auto p-6">
-
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Usuários (API externa)</h1>
-        <div className="flex gap-3">
-          <button
-            type='button' 
-            onClick={loadUsers}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
-          >
-            Atualizar
-          </button>
-
-          <a
-            href="/user/form"
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow flex items-center"
-          >
-            Novo
-          </a>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Usuários</h1>
+          <div className="flex gap-3">
+            <button
+              type='button'
+              onClick={loadUsers}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+            >
+              Atualizar
+            </button>
+            <Link
+              href="/user/new"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow flex items-center"
+            >
+              Novo
+            </Link>
+          </div>
         </div>
-      </div>
-
+        {error && <div className="text-red-600 mb-4">{error}</div>}
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200">
             <thead className="bg-gray-100">
               <tr>
-                <th className="py-3 px-4 border-b text-left">Avatar</th>
+                <th className="py-3 px-4 border-b text-left">ID</th>
                 <th className="py-3 px-4 border-b text-left">Nome</th>
                 <th className="py-3 px-4 border-b text-left">E-mail</th>
               </tr>
             </thead>
             <tbody>
-                
-                {users.map((user) => (
-                <tr className="hover:bg-gray-50">
-                  <td className="py-3 px-4 border-b">
-                    <img src={user['avatar'] }className="w-10 h-10 rounded-full" />
-                  </td>
-                  <td className="py-3 px-4 border-b">
-                        {user['first_name']} {user['last_name']} 
-                  </td>
-                  <td className="py-3 px-4 border-b">
-                        {user['email']} 
-				  </td>
+              {users.map((user) => (
+                <tr key={user.id} className="hover:bg-gray-50">
+                  <td className="py-3 px-4 border-b">{user.id}</td>
+                  <td className="py-3 px-4 border-b">{user.name}</td>
+                  <td className="py-3 px-4 border-b">{user.email}</td>
                 </tr>
-                ))}
-              
+              ))}
             </tbody>
           </table>
         </div>
-      
-
-      <a href="/" className="block mt-6 text-blue-600 underline">
-        Voltar ao Home
-      </a>
-    </div>
+        <Link href="/" className="block mt-6 text-blue-600 underline">
+          Voltar ao Home
+        </Link>
+      </div>
     </main>
-    )
+  );
 }
