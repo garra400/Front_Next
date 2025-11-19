@@ -1,9 +1,4 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
+// Porta customizada para Next.js
 module.exports = {
   devIndicators: {
     autoPrerender: false,
@@ -16,6 +11,3 @@ module.exports = {
     port: 3001
   }
 };
-
-
-export default nextConfig;
