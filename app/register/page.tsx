@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { register } from "../service/user_service";
+import { registerUser } from "../lib/api";
 
 export default function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,8 +16,8 @@ export default function Register() {
     e.preventDefault();
     setError("");
     try {
-      await register(email, password);
-      router.push("/");
+      await registerUser({ name, email, password });
+      router.push("/login");
     } catch (err) {
       console.error(err);
       setError("Erro ao registrar usuario.");
@@ -30,6 +31,14 @@ export default function Register() {
         {error && <div className="mb-4 text-red-600 text-sm">{error}</div>}
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Nome"
+            className="input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
           <input
             type="email"
             placeholder="Email"

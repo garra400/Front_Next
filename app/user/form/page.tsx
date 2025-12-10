@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { createUser } from "../../lib/api";
 
 type MensagemEstado = {
   tipo: "sucesso" | "erro" | "";
@@ -18,27 +19,15 @@ export default function UserForm() {
     event.preventDefault();
 
     try {
-      const res = await fetch("https://reqres.in/api/users", {
-        method: "POST",
-        headers: {
-          "x-api-key": "reqres-free-v1",
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-          email,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Falha ao criar usuario");
-      }
-
-      const data = await res.json();
+      const payload = {
+        name: `${firstName} ${lastName}`.trim(),
+        email,
+        password: crypto.randomUUID(), // senha dummy, backend exige campo
+      };
+      const data = await createUser(payload);
       setMensagem({
         tipo: "sucesso",
-        texto: `Usuario criado (id: ${data.id ?? "teste"})`,
+        texto: `Usuario criado (id: ${data.id ?? "novo"})`,
       });
 
       setLastName("");

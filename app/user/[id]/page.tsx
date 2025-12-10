@@ -1,38 +1,78 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getUser, updateUser } from "../../lib/api";
 
 export default function UserEdit({ params }: { params: { id: string } }) {
   const { id } = params;
-  const [name, setName] = useState(""); // TODO: Buscar nome do usuario pela API
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await getUser(id);
+        setName(data.name || "");
+        setEmail(data.email || "");
+      } catch (err) {
+        console.error(err);
+        setError("Falha ao carregar usuario");
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [id]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Chamar API para editar usuario
-    router.push("/user");
+    setError("");
+    try {
+      await updateUser(id, { name, email, password: password || undefined });
+      router.push("/user");
+    } catch (err) {
+      console.error(err);
+      setError("Falha ao salvar usuario");
+    }
   };
 
-  const handleDelete = async () => {
-    // TODO: Chamar API para deletar usuario
-    setShowConfirm(false);
-    router.push("/user");
-  };
+  if (loading) {
+    return <main className="p-8 text-center">Carregando...</main>;
+  }
 
   return (
     <main className="min-h-screen flex flex-col items-center bg-white p-8">
       <div className="w-full max-w-md bg-gray-100 rounded-2xl shadow-lg p-8 flex flex-col items-center">
         <h2 className="text-3xl font-bold mb-6">Editar Usuario #{id}</h2>
+        {error && <div className="text-red-600 mb-3">{error}</div>}
         <form className="w-full flex flex-col gap-4" onSubmit={handleSave}>
           <input
             type="text"
-            placeholder="Nome do usuario"
+            placeholder="Nome"
             className="p-3 rounded border"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+          />
+          <input
+            type="email"
+            placeholder="E-mail"
+            className="p-3 rounded border"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Nova senha (opcional)"
+            className="p-3 rounded border"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button
             type="submit"
@@ -41,30 +81,6 @@ export default function UserEdit({ params }: { params: { id: string } }) {
             Salvar
           </button>
         </form>
-        <button
-          onClick={() => setShowConfirm(true)}
-          className="mt-6 text-red-600 font-semibold"
-        >
-          Excluir Usuario
-        </button>
-        {showConfirm && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-            <div className="bg-white p-8 rounded shadow-lg flex flex-col items-center">
-              <p className="mb-4">Tem certeza que deseja excluir este usuario?</p>
-              <div className="flex gap-4">
-                <button onClick={handleDelete} className="bg-red-600 text-white px-4 py-2 rounded">
-                  Sim, excluir
-                </button>
-                <button
-                  onClick={() => setShowConfirm(false)}
-                  className="bg-gray-300 px-4 py-2 rounded"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </main>
   );

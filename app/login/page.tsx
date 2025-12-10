@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "../service/user_service";
+import { login } from "../lib/api";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
     try {
-      await login(email, password);
+      await login(username, password);
       router.push("/");
     } catch (err) {
       console.error(err);
@@ -31,11 +31,11 @@ export default function Login() {
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <input
-            type="email"
-            placeholder="Email"
+            type="text"
+            placeholder="Usuario (Cognito)"
             className="input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
           <input
