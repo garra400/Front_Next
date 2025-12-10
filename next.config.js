@@ -1,13 +1,7 @@
-// Porta customizada para Next.js
-module.exports = {
-  devIndicators: {
-    autoPrerender: false,
-  },
-  serverRuntimeConfig: {},
-  publicRuntimeConfig: {},
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
   experimental: {},
-  // Porta customizada
-  devServer: {
-    port: 3001
-  }
 };
+
+module.exports = nextConfig;

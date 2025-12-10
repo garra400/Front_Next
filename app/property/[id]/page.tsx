@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function PropertyEdit({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [name, setName] = useState(''); // TODO: Buscar nome da propriedade pela API
   const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function PropertyEdit({ params }: { params: { id: string } }) {
   return (
     <main className="min-h-screen flex flex-col items-center bg-white p-8">
       <div className="w-full max-w-md bg-gray-100 rounded-2xl shadow-lg p-8 flex flex-col items-center">
-        <h2 className="text-3xl font-bold mb-6">Editar Propriedade</h2>
+        <h2 className="text-3xl font-bold mb-6">Editar Propriedade #{id}</h2>
         <form className="w-full flex flex-col gap-4" onSubmit={handleSave}>
           <input
             type="text"
